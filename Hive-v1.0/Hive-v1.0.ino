@@ -1,6 +1,6 @@
 #include <NewPing.h>
 #include <AccelStepper.h>
-#include <MultiStepper.h>
+//#include <MultiStepper.h>
 
 
 #define SONAR_NUM     6 // Number or sensors.
@@ -56,7 +56,7 @@ int checkdir(int lastping){
       mdis=dis;
       dir=currentSensor;
     }
-    delay(500);
+    //delay(500);
   }
   Serial.println(mdis);
   Serial.print("Direction  ---  ");
@@ -133,10 +133,11 @@ void setup() {
 
 
 
-  stepper1.setMaxSpeed(1000.0);
-  stepper1.setAcceleration(1000.0);
-  stepper2.setMaxSpeed(1000.0);
-  stepper2.setAcceleration(1000.0);
+  stepper1.setMaxSpeed(800.0);
+ stepper1.setAcceleration(1000.0);
+ 
+  stepper2.setMaxSpeed(800.0);
+ stepper2.setAcceleration(1000.0);
 
 
  delay(75);
