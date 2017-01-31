@@ -27,8 +27,8 @@ void setup() {
   
  size (600, 600); // ***CHANGE THIS TO YOUR SCREEN RESOLUTION***
  smooth();
-/* myPort = new Serial(this,"COM4", 9600); // starts the serial communication
- myPort.bufferUntil('.');*/ // reads the data from the serial port up to the character '.'. So actually it reads this: angle,distance.
+ myPort = new Serial(this,"/dev/ttyACM0", 9600); // starts the serial communication
+ myPort.bufferUntil('.'); // reads the data from the serial port up to the character '.'. So actually it reads this: angle,distance.
  orcFont = loadFont("FreeMonoBold-48.vlw");
 }
 void draw() {

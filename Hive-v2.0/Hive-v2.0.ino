@@ -4,21 +4,21 @@
                                                                 //#include <Wire.h>
 
 #define SONAR_NUM     6 // Number or sensors.
-#define MAX_DISTANCE 50 // Maximum distance (in cm) to ping.
+#define MAX_DISTANCE 200 // Maximum distance (in cm) to ping.
 
-unsigned int pingdis[6]={50,50,50,50,50,50},lastping=0;         // Where the ping distances are stored.
+unsigned int pingdis[6]={2,2,2,2,2,2},lastping=0;         // Where the ping distances are stored.
 uint8_t currentSensor = 0;
 double angle=0;   
 
       
 
 NewPing sonar[SONAR_NUM] = {           // Sensor object array.
-  NewPing(10, 11, MAX_DISTANCE),//0    // Each sensor's trigger pin, echo pin, and max distance to ping.
-  NewPing(12, 13, MAX_DISTANCE),//1           
-  NewPing(A0, A1, MAX_DISTANCE),//2           
-  NewPing(52, 53, MAX_DISTANCE),//3
-  NewPing(50, 51, MAX_DISTANCE),//4
-  NewPing(48, 49, MAX_DISTANCE),//5           
+  NewPing(10,11, MAX_DISTANCE),//0    // Each sensor's trigger pin, echo pin, and max distance to ping.
+  NewPing(A2,A3, MAX_DISTANCE),//1           
+  NewPing(A4,A5, MAX_DISTANCE),//2           
+  NewPing(6,7, MAX_DISTANCE),//3
+  NewPing(8,9, MAX_DISTANCE),//4
+  NewPing(0,1, MAX_DISTANCE),//5           
   };
 
 #define HALFSTEP 8
@@ -29,10 +29,10 @@ NewPing sonar[SONAR_NUM] = {           // Sensor object array.
 #define motorPin3  4     // IN3 on the ULN2003 driver 1
 #define motorPin4  5     // IN4 on the ULN2003 driver 1
 
-#define motorPin5  30     // IN1 on the ULN2003 driver 1
-#define motorPin6  31    // IN2 on the ULN2003 driver 1
-#define motorPin7  32    // IN3 on the ULN2003 driver 1
-#define motorPin8  33   // IN4 on the ULN2003 driver 1
+#define motorPin5  A1     // IN1 on the ULN2003 driver 1
+#define motorPin6  A0    // IN2 on the ULN2003 driver 1
+#define motorPin7  13    // IN3 on the ULN2003 driver 1
+#define motorPin8  12   // IN4 on the ULN2003 driver 1
 
 
 // Initialize with pin sequence IN1-IN3-IN2-IN4 for using the AccelStepper with 28BYJ-48
@@ -46,24 +46,29 @@ int checkdis(int last_ping){
 
 	
 	for (uint8_t i = 0; i < SONAR_NUM; i++) {       // Loop through all the sensors.
+		Serial.println("sensing");
+		while((millis()-last_ping)<=50);
 		
-		while((millis()-last_ping)<=35);
-		
-		sonar[currentSensor].timer_stop();          // Make sure previous timer is canceled before starting a new ping (insurance).
+		//sonar[currentSensor].timer_stop();          // Make sure previous timer is canceled before starting a new ping (insurance).
 		currentSensor = i;                          // Sensor being accessed.
-		sonar[currentSensor].ping_timer(echoCheck);
+   pingdis[currentSensor]=sonar[currentSensor].ping_cm();
+   if(pingdis[currentSensor]==0){
+    pingdis[currentSensor]=50;
+   }
+		//sonar[currentSensor].ping_timer(echoCheck);
                                                   
-    Serial.print(i);                            //Data to the processing environment      
+ /*   Serial.print(i);                            //Data to the processing environment      
     Serial.print(",");
-    Serial.print(pingdis[currentsensor]);
-    Serial.print(".");
-   
+    Serial.print(pingdis[currentSensor]);
+    Serial.print(".");*/
+    
 	}
 
   Serial.println("Distances measured by sensors: ");
  
  for(uint8_t i = 0; i<SONAR_NUM; i++) {
   Serial.print(i);
+  Serial.print("-----");
 	Serial.println(pingdis[i]);
  }
 
@@ -73,28 +78,32 @@ int checkdis(int last_ping){
 
 
 
-void echoCheck() {									 // If ping received, set the sensor distance to array.
-
-	pingdis[currentSensor]=50;		
-	if (sonar[currentSensor].check_timer())
+/*void echoCheck() {									 // If ping received, set the sensor distance to array.
+Serial.println("echo");
+	//pingdis[currentSensor]=50;		
+	if (sonar[currentSensor].check_timer()){
 		pingdis[currentSensor]= sonar[currentSensor].ping_result / US_ROUNDTRIP_CM;
-		if (pingdis[currentSensor]==0){				//handle exceptions for 0 and max distance error
-			pingdis[currentSensor]=2;
-		}
-	
-}	
+   Serial.print("measured=");
+   Serial.println(pingdis[currentSensor]);
+	}
+		
+}	*/
 
 double calcDir(){
 
 	double x_dis=0;
 	double y_dis=0;
 	double angle=0;
+
 	for (uint8_t i = 0; i < SONAR_NUM; i++) { 
-		x_dis=(1/pingdis[i])*cos(((i*60)*1000) / 57296) + x_dis;		//Superposition of all distance vectors
-		y_dis=(1/pingdis[i])*sin(((i*60)*1000) / 57296) + y_dis;
+		x_dis=((1.00/pingdis[i])*cos(((i*60)*1000) / 572)) + x_dis;		//Superposition of all distance vectors
+ 
+		y_dis=((1.00/pingdis[i])*sin(((i*60)*1000) / 572)) + y_dis;
+  
 	}
 
-	angle=(atan(y_dis/x_dis)* 57296) / 1000;							//Resultant vector dir range = +180 to -180
+	angle=(atan(y_dis/x_dis))* 57296 / 1000;							//Resultant vector dir range = +180 to -180
+
 
 	if(x_dis<0 && y_dis>0){												//handle second quadrant angle
 
@@ -105,7 +114,7 @@ double calcDir(){
 		angle=angle-180;
 	}
 
-  Serial.println("Angle: ");
+  Serial.print("Angle: ");
   Serial.println(angle);
   
 	return angle;
@@ -118,23 +127,23 @@ void move(double angle){												//Move to a desired direction
 
 	if(angle!=0){
 
-																		 Serial.println("Turning");
+																		            Serial.println("Turning");
 		stepper1.setCurrentPosition(0);
 		stepper2.setCurrentPosition(0);
 
 		 stepper1.setSpeed(200);
 		 stepper2.setSpeed(200);
 		  
-		stepper1.moveTo(346*angle);										//calculate the real number for an arbitary angle
-		stepper2.moveTo(-346*angle);
-																		Serial.println("Go-to run");
+		stepper1.moveTo(30/**angle*/);										//calculate the real number for an arbitary angle
+		stepper2.moveTo(-30/**angle*/);
+																		              Serial.println("Go-to run");
 
 		while(stepper1.distanceToGo() != 0&&stepper2.distanceToGo() != 0){
 			stepper1.run();
 			stepper2.run();
 		  
 			}
-																		Serial.println("Ran");
+																		              Serial.println("Ran");
 	}
 	
 	else{
@@ -151,21 +160,21 @@ void move(double angle){												//Move to a desired direction
 
 		stepper1.moveTo(4096);
 		stepper2.moveTo(4096);
-																			Serial.println("Moving forward");
+																			              Serial.println("Moving forward");
 		while(stepper1.distanceToGo() != 0&&stepper2.distanceToGo() != 0){
 			stepper1.run();
 			stepper2.run();
-																			  Serial.println("forward run");
+																			               // Serial.println("forward run");
 			}
 		}	
-																			Serial.println("bot-moved");
+																	              		  Serial.println("bot-moved");
 		
 }
 
 
 void setup() {
 
-	Serial.begin(9600);
+	Serial.begin(115200);
 																			//Wire.begin();
 	delay(50);
 	lastping=checkdis(millis());
@@ -185,7 +194,7 @@ void loop() {
 																				Wire.write(angle);        // sends five bytes
 																				Wire.endTransmission();    // stop transmitting
 																			*/
-	delay(500);
+	delay(2000);
 
 }
 
