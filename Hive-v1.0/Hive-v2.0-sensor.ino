@@ -1,7 +1,7 @@
 #include <NewPing.h>
 #include <AccelStepper.h>
 #include <math.h>
-                                                                //#include <Wire.h>
+#include <Wire.h>
 
 #define SONAR_NUM     6 // Number or sensors.
 #define MAX_DISTANCE 50 // Maximum distance (in cm) to ping.
@@ -52,22 +52,8 @@ int checkdis(int last_ping){
 		sonar[currentSensor].timer_stop();          // Make sure previous timer is canceled before starting a new ping (insurance).
 		currentSensor = i;                          // Sensor being accessed.
 		sonar[currentSensor].ping_timer(echoCheck);
-                                                  
-    Serial.print(i);                            //Data to the processing environment      
-    Serial.print(",");
-    Serial.print(pingdis[currentsensor]);
-    Serial.print(".");
-   
 	}
-
-  Serial.println("Distances measured by sensors: ");
- 
- for(uint8_t i = 0; i<SONAR_NUM; i++) {
-  Serial.print(i);
-	Serial.println(pingdis[i]);
- }
-
- 
+	
 	return millis();  
 }
 
@@ -105,9 +91,6 @@ double calcDir(){
 		angle=angle-180;
 	}
 
-  Serial.println("Angle: ");
-  Serial.println(angle);
-  
 	return angle;
 }
 
@@ -118,23 +101,23 @@ void move(double angle){												//Move to a desired direction
 
 	if(angle!=0){
 
-																		 Serial.println("Turning");
+																		// Serial.println("Turning");
 		stepper1.setCurrentPosition(0);
 		stepper2.setCurrentPosition(0);
 
-		 stepper1.setSpeed(200);
-		 stepper2.setSpeed(200);
+		 stepper1.setSpeed(400);
+		 stepper2.setSpeed(400);
 		  
 		stepper1.moveTo(346*angle);										//calculate the real number for an arbitary angle
 		stepper2.moveTo(-346*angle);
-																		Serial.println("Go-to run");
+																		//Serial.println("Go-to run");
 
 		while(stepper1.distanceToGo() != 0&&stepper2.distanceToGo() != 0){
 			stepper1.run();
 			stepper2.run();
 		  
 			}
-																		Serial.println("Ran");
+																		//Serial.println("Ran");
 	}
 	
 	else{
@@ -151,21 +134,20 @@ void move(double angle){												//Move to a desired direction
 
 		stepper1.moveTo(4096);
 		stepper2.moveTo(4096);
-																			Serial.println("Moving forward");
+																			//Serial.println("Moving forward");
 		while(stepper1.distanceToGo() != 0&&stepper2.distanceToGo() != 0){
 			stepper1.run();
 			stepper2.run();
-																			  Serial.println("forward run");
+																			 // Serial.println("forward run");
 			}
 		}	
-																			Serial.println("bot-moved");
+																			//Serial.println("bot-moved");
 		
 }
 
 
 void setup() {
 
-	Serial.begin(9600);
 																			//Wire.begin();
 	delay(50);
 	lastping=checkdis(millis());
