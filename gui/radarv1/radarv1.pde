@@ -19,7 +19,7 @@ String distance="";
 String data="";
 String noObject;
 float pixsDistance;
-int iAngle=0, iDistance=0;
+int iAngle=0, iDistance=0, iline=0;
 int index1=0;
 int index2=0;
 PFont orcFont;
@@ -30,10 +30,12 @@ void setup() {
  myPort = new Serial(this,"/dev/ttyACM0", 9600); // starts the serial communication
  myPort.bufferUntil('.'); // reads the data from the serial port up to the character '.'. So actually it reads this: angle,distance.
  orcFont = loadFont("FreeMonoBold-48.vlw");
+ 
+ 
 }
 void draw() {
   
-  fill(98,245,31);
+  //fill(98,245,31);
   textFont(orcFont);
   // simulating motion blur and slow fade of the moving line
   noStroke();
@@ -43,8 +45,10 @@ void draw() {
   fill(98,245,31); // green color
   // calls the functions for drawing the radar
   drawRadar(); 
+  drawLine();
   drawObject();
   drawText();
+ 
 }
 
 void serialEvent (Serial myPort) { // starts reading data from the Serial Port
@@ -64,21 +68,55 @@ void drawRadar() {
   pushMatrix();
   translate(width/2,height/2); 
   rotate(PI);// moves the starting coordinats to new location
-  noFill();
+  noFill();  
   strokeWeight(8);
   stroke(98,245,31);
   // draws the arc lines
-  arc(0,0,(width-width*0.09),(width-width*0.09),0,TWO_PI);
+  //arc(0,0,(width-width*0.09),(width-width*0.09),0,TWO_PI);
   // draws the angle lines
-  line(0,0,(width-width*0.09)*cos(radians(30))*0.5,(width-width*0.09)*sin(radians(30))*0.5);
+ /* line(0,0,(width-width*0.09)*cos(radians(30))*0.5,(width-width*0.09)*sin(radians(30))*0.5);
   line(0,0,(width-width*0.09)*cos(radians(90))*0.5,(width-width*0.09)*sin(radians(90))*0.5);
   line(0,0,(width-width*0.09)*cos(radians(150))*0.5,(width-width*0.09)*sin(radians(150))*0.5);
   line(0,0,(width-width*0.09)*cos(radians(210))*0.5,(width-width*0.09)*sin(radians(210))*0.5);
   line(0,0,(width-width*0.09)*cos(radians(270))*0.5,(width-width*0.09)*sin(radians(270))*0.5);
-  line(0,0,(width-width*0.09)*cos(radians(330))*0.5,(width-width*0.09)*sin(radians(330))*0.5); 
+  line(0,0,(width-width*0.09)*cos(radians(330))*0.5,(width-width*0.09)*sin(radians(330))*0.5); */
   popMatrix();
 }
+
+void drawLine() {
+  pushMatrix();
+  strokeWeight(4);
+  stroke(30,250,60);
+  translate(width/2,height/2);
+  rotate(-PI/2);// moves the starting coordinats to new location
+
+    line(0,0,(width-width*0.09)*0.5*cos(radians(--iline)),(width-width*0.09)*0.5*sin(radians(--iline))); // draws the line according to the angle
+
+  popMatrix();
+}
+
 void drawObject() {
+  pushMatrix();
+  translate(width/2,height/2);
+  rotate(-PI/2);// moves the starting coordinats to new location
+  strokeWeight(4);
+  stroke(255,10,10); // red color
+  pixsDistance = iDistance*(width-width*0.09)*0.5*0.02;//iDistance*22.5; // covers the distance from the sensor from cm to pixels
+  // limiting the range to 40 cms
+  
+    // draws the object according to the angle and the distance
+  for(int i=-2;i<=2;i++){
+  line(pixsDistance*cos(radians(((6-iAngle)*60)+i)),pixsDistance*sin(radians(((6-iAngle)*60)+i)),(width-width*0.09)*0.5*cos(radians(((6-iAngle)*60)+i)),(width-width*0.09)*0.5*sin(radians(((6-iAngle)*60)+i)));
+  }
+  popMatrix();
+}
+
+
+
+
+
+
+/*void drawObject() {
   pushMatrix();
   translate(width/2,height/2); // moves the starting coordinats to new location
   rotate(-PI/2);
@@ -87,10 +125,11 @@ void drawObject() {
   pixsDistance = iDistance*((height-height*0.09)*0.01); // covers the distance from the sensor from cm to pixels
 
      // draws the object according to the angle and the distanc4
-  line(0,0,pixsDistance*cos(radians((6-iAngle)*60)),pixsDistance*sin(radians((6-iAngle)*60)));
-  
+  for(int i=0;i<=5;i++){
+  line(100*cos(radians((6-i)*60)),-100*sin(radians((6-i)*60)),(height-height*0.09)*0.5*sin(radians((6-i)*60)),-(height-height*0.09)*0.5*sin(radians((6-i)*60)));
+  }
   popMatrix();
-}
+}*/
 
 void drawText() { // draws the texts on the screen
   
@@ -101,8 +140,7 @@ void drawText() { // draws the texts on the screen
   fill(98,245,31);
   textSize(20);
   text("Distance: ", width-width*0.4, height-height*0.01);
-  if(iDistance<40) {
-  text("        " + iDistance +" cm", width-width*0.3, height-height*0.01);
-  }
+  text("     " + iDistance +" cm", width-width*0.3, height-height*0.01);
+  
   popMatrix(); 
 }

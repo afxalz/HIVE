@@ -29,10 +29,10 @@ NewPing sonar[SONAR_NUM] = {										// Sensor object array.
 #define motorPin3  4    											 // IN3 on the ULN2003 driver 1
 #define motorPin4  5   												  // IN4 on the ULN2003 driver 1
 
-#define motorPin5  A1    											 // IN1 on the ULN2003 driver 1
-#define motorPin6  A0   											 // IN2 on the ULN2003 driver 1
-#define motorPin7  13    											// IN3 on the ULN2003 driver 1
-#define motorPin8  12   											// IN4 on the ULN2003 driver 1
+#define motorPin5  A1    											 // IN1 on the ULN2003 driver 2
+#define motorPin6  A0   											 // IN2 on the ULN2003 driver 2
+#define motorPin7  13    											// IN3 on the ULN2003 driver 2
+#define motorPin8  12   											// IN4 on the ULN2003 driver 2
 
 
 																	// Initialize with pin sequence IN1-IN3-IN2-IN4 for using the AccelStepper with 28BYJ-48
@@ -55,7 +55,7 @@ int checkdis(int last_ping){
 	    	pingdis[currentSensor]=200;
    		}
 																
-                                                  
+	}                                                
  
 
 	Serial.println("Distances measured by sensors: ");
