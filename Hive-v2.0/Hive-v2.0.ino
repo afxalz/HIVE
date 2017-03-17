@@ -6,7 +6,7 @@
 #define SONAR_NUM 6 // Number or sensors.								//Macros for ping
 #define MAX_DISTANCE 200 // Maximum distance (in cm) to ping.
 
-unsigned int pingdis[6] = {2, 2, 2, 2, 2, 2}, lastping = 0;							// Where the ping distances are stored.
+unsigned int pingdis[6] = {2, 2, 2, 2, 2, 2}, lastping = 0;						// Where the ping distances are stored.
 uint8_t currentSensor = 0;
 double angle = 0;
 
