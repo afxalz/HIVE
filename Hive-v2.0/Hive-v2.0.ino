@@ -11,7 +11,7 @@ uint8_t currentSensor = 0;
 double angle=0;   
 
       
-
+/*
 NewPing sonar[SONAR_NUM] = {										// Sensor object array.
   NewPing(10,11, MAX_DISTANCE),//0  								// Each sensor's trigger pin, echo pin, and max distance to ping.
   NewPing(A2,A3, MAX_DISTANCE),//1           
@@ -19,7 +19,7 @@ NewPing sonar[SONAR_NUM] = {										// Sensor object array.
   NewPing(6,7, MAX_DISTANCE),//3
   NewPing(8,9, MAX_DISTANCE),//4
   NewPing(0,1, MAX_DISTANCE),//5           
-  };
+  };*/
 
 #define HALFSTEP 8
 
