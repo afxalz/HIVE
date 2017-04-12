@@ -78,7 +78,7 @@ class Swarm(object):
 
 	def finish(self):
 		self.fig=plt.figure()
-		plt.axis([-200, 200, -200, 200])
+		plt.axis([-600, 600, -600, 600])
 		self.scat=plt.scatter(np.array(self.animation_position[0])[:,0],np.array(self.animation_position[0])[:,1])
 
 		ani=animation.FuncAnimation(self.fig,self.update_plot,frames=xrange(len(self.animation_position)),interval=100)
@@ -93,17 +93,17 @@ class Swarm(object):
 
 
 
-particle_count=100
-inertia=0.79
+particle_count=15
+inertia=0.5
 cognitive=1.49445
 social=1.49445
 time_unit=1
-alpha=0.2
+alpha=0.01
 def random_position_generator():
-	return np.random.uniform(-200,200,2)
+	return np.random.uniform(-600,600,2)
 
 def random_velocity_generator():
-	return np.random.uniform(-0.02,0.02,2)
+	return np.random.uniform(-0.0002,0.0002,2)
 
 def objective_function(position):
 	return -np.sqrt(np.mean(position**2))	

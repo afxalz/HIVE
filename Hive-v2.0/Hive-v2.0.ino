@@ -5,6 +5,7 @@
 
 #define SONAR_NUM     6 // Number or sensors.						//Macros for ping
 #define MAX_DISTANCE 200 // Maximum distance (in cm) to ping.
+#define MIN_DISTANCE 7    // Minimum distance (in cm) to ping.
 
 unsigned int pingdis[6]={2,2,2,2,2,2},lastping=0;					// Where the ping distances are stored.
 uint8_t currentSensor = 0;
@@ -41,6 +42,21 @@ AccelStepper stepper1(HALFSTEP, motorPin1, motorPin3, motorPin2, motorPin4);
 AccelStepper stepper2(HALFSTEP, motorPin5, motorPin7, motorPin6, motorPin8);
 
 
+
+void Stopbot(){
+  
+}
+
+
+
+
+
+
+
+
+
+
+
 int checkdis(int last_ping){
 
 	
@@ -56,6 +72,7 @@ int checkdis(int last_ping){
    		}
 																
 	}                                                
+
  
 
 	Serial.println("Distances measured by sensors: ");
@@ -103,7 +120,7 @@ double calcDir(){
 }
 
 
-void move(){											  			//Move in the desired direction
+void move(float dir){											  			//Move in the desired direction
 
 	stepper1.setCurrentPosition(0);									//Set current position to zero
 	stepper2.setCurrentPosition(0);
@@ -118,8 +135,8 @@ void move(){											  			//Move in the desired direction
 	stepper2.setSpeed(400);
 
 
-	stepper1.moveTo(2048);											//Assign the no. of turns to move
-	stepper2.moveTo(-2048);		
+	stepper1.moveTo(dir*2048);											//Assign the no. of turns to move
+	stepper2.moveTo(dir*-2048);		
 	
 	Serial.println("Moving forward...");
 	
@@ -191,17 +208,37 @@ void setup() {
 void loop() {
   
 	lastping=checkdis(lastping);
+	
+	
+	if(pingdis[0]<=MIN_DISTANCE &&  pingdis[1]<=MIN_DISTANCE && pingdis[5]<=MIN_DISTANCE )
+ {
+  stepper1.stop();                  //Set current position to zero
+  stepper2.stop();
+   
+ }
+	else{
+  if(pingdis[0]<=MIN_DISTANCE){
+
+    move(-2);
+    turn(90);
+    }
+  
+	
+	else{
 	angle=calcDir();													//Get the right direction to move
 	turn(angle);														//See if a turn is required
-	move();																//Move in the found direction
+	move(0.5);		
+	}														//Move in the found direction
 
-
+	}
 																			/*	Wire.beginTransmission(1); // transmit to device #8
 																				Wire.write(angle);        // sends five bytes
 																				Wire.endTransmission();    // stop transmitting
 																			*/
 																			
-	delay(1000);
+	delay(10);
 
 }
+
+
 
